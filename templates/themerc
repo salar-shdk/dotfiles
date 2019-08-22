@@ -1,0 +1,37 @@
+!! an openbox theme based on the diehard4 gtk theme 
+
+
+!! menu title
+menu.title.bg: gradient vertical flat 
+menu.title.bg.color:  {color1}
+menu.title.bg.colorTo: {color2}
+
+menu.title.text.color:{color7}
+menu.title.text.justify: center
+
+menu.separator.color:{color5}
+menu.border.color: {color4}
+
+!! menu items
+menu.items.bg: flat solid 
+menu.items.bg.color:{color0}
+
+menu.items.text.color:{color8}
+menu.items.justify: left
+menu.items.disabled.text.color: {color1} 
+menu.items.active.bg: gradient vertical flat
+menu.items.active.bg.color:{color2}
+menu.items.active.bg.colorTo:{color1}
+menu.items.active.text.color:{color8}
+
+!! misc settings
+border.color: {color4}
+border.width: 1
+padding.width: 5
+window.handle.width: 0
+window.client.padding.width: 0
+menu.overlap.x: 2
+menu.overlap.y: 0
+osd.hilight.bg: flat
+osd.hilight.bg.color: {color0}
+

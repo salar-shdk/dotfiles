@@ -1,0 +1,76 @@
+conky.config = {{
+	alignment = 'top_right',
+	background = true,
+	color2 = {color6},
+    color3 = {color7},
+	cpu_avg_samples = 2,
+	default_color = {foreground},
+	double_buffer = true,
+	font = 'DejaVu Sans Mono Boot:size=10',
+	draw_shades = false,
+	gap_x = 25,
+	gap_y = 50,
+	minimum_width = 250,
+	no_buffers = true,
+	own_window = true,
+	own_window_class = "Conky",
+	own_window_type = 'desktop',
+	own_window_transparent = true,
+	update_interval = 1.0,
+	use_xft = true,
+    
+}}
+
+conky.text = [[
+${{color2}}${{alignc}}S Y S T E M    I N F O
+${{hr}}${{color}}
+${{color2}}Host${{color}}${{alignr}}${{nodename}}
+${{color2}}Uptime${{color}}${{alignr}}${{uptime}}
+${{color2}}UTC${{color}}${{alignr}}${{utime %H:%M}}
+
+${{color2}}${{goto 60}}Used${{alignr}}Size${{color}}
+${{color2}}Root${{color}}${{goto 60}}${{fs_used /}}${{alignr}}${{fs_size /}}
+
+${{color2}}${{goto 60}}MEM${{alignr}}MAX${{color}}
+${{color2}}RAM${{color}}${{goto 60}}${{mem}}${{alignr}}${{memmax}}
+${{color2}}Swap${{color}}${{goto 60}}${{swap}}${{alignr}}${{swapmax}}
+
+${{color2}}${{goto 60}}Used${{alignr}}GHz${{color}}
+${{color2}}CPU${{color}}${{goto 60}}${{cpu cpu0}}%${{alignr}}${{freq_g}}
+${{color2}}Cores${{color}} 
+
+${{goto 60}}${{cpu cpu1}}%${{goto 100}}${{cpu cpu3}}%${{goto 140}}${{cpu cpu5}}%${{goto 180}}${{cpu cpu7}}%
+${{goto 60}}${{cpu cpu2}}%${{goto 100}}${{cpu cpu4}}%${{goto 140}}${{cpu cpu6}}%${{goto 180}}${{cpu cpu8}}%
+
+${{color2}}Temp:${{color}}${{alignr}}${{hwmon 0 temp 1}}${{color2}}°C${{color}}
+
+${{color2}}${{alignc}}R U N N I N I G
+${{hr}}${{color}}
+${{offset 4}}${{color2}}by CPU${{alignr}}CPU ${{color}}${{voffset 1}}
+${{offset 4}}${{top name 1}}${{alignr}}${{top cpu 1}}
+${{offset 4}}${{top name 2}}${{alignr}}${{top cpu 2}}
+${{offset 4}}${{top name 3}}${{alignr}}${{top cpu 3}}
+${{offset 4}}${{top name 4}}${{alignr}}${{top cpu 4}}
+
+${{offset 4}}${{color2}}by MEMORY${{alignr}}MEM ${{color}}${{voffset 1}}
+${{offset 4}}${{top_mem name 1}}${{alignr}}${{top_mem mem_res 1}}
+${{offset 4}}${{top_mem name 2}}${{alignr}}${{top_mem mem_res 2}}
+${{offset 4}}${{top_mem name 3}}${{alignr}}${{top_mem mem_res 3}}
+${{offset 4}}${{top_mem name 4}}${{alignr}}${{top_mem mem_res 4}}
+
+
+${{color2}}${{alignc}}N E T W O R K   I N F O
+${{hr}}${{color}}
+${{color2}}LOCAL IP:${{color}}$alignr${{if_up wlp3s0}}${{addr wlp3s0}}${{else}}${{endif}}
+${{color2}}PUBLIC IP:${{color}}$alignr${{if_up wlp3s0}}${{exec curl "https://api.ipify.org/?format=raw"}}${{else}}${{endif}}
+
+${{color2}}Up:${{color}}${{upspeedf wlp3s0}}${{alignr}}${{color2}}Down:${{color}}${{downspeedf wlp3s0}}
+${{color}}${{upspeedgraph wlp3s0 30,120 }}$alignr${{downspeedgraph wlp3s0 30, 120 -t -l}}
+${{color2}}Up:$color ${{totalup wlp3s0}}${{color2}}${{alignr}}Down:$color ${{totaldown wlp3s0}}
+
+
+${{color2}}${{alignc}}N O T E
+${{hr}}${{color}}
+ - plate detector
+]];
+
