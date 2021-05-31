@@ -1,0 +1,164 @@
+--[[
+
+]]
+
+conky.config = {
+
+	--Various settings
+
+	background = true, 							-- forked to background
+	cpu_avg_samples = 2,						-- The number of samples to average for CPU monitoring.
+	diskio_avg_samples = 10,					-- The number of samples to average for disk I/O monitoring.
+	double_buffer = true,						-- Use the Xdbe extension? (eliminates flicker)
+	if_up_strictness = 'address',				-- how strict if testing interface is up - up, link or address
+	net_avg_samples = 2,						-- The number of samples to average for net data
+	no_buffers = true,							-- Subtract (file system) buffers from used memory?
+	temperature_unit = 'celsius',				-- fahrenheit or celsius
+	text_buffer_size = 2048,					-- size of buffer for display of content of large variables - default 256
+	update_interval = 1,						-- update interval
+	imlib_cache_size = 0,                       -- disable image cache to get a new spotify cover per song
+
+
+	--Placement
+
+	alignment = 'middle_right',						-- top_left,top_middle,top_right,bottom_left,bottom_middle,bottom_right,
+												-- middle_left,middle_middle,middle_right,none
+	--Arch Duoscreen
+	--gap_x = -1910,
+	gap_x = 15,									-- pixels between right or left border
+	gap_y = 0,									-- pixels between bottom or left border
+	minimum_height = 600,						-- minimum height of window
+	minimum_width = 300,						-- minimum height of window
+	maximum_width = 300,						-- maximum height of window
+
+	--Graphical
+
+	border_inner_margin = 10, 					-- margin between border and text
+	border_outer_margin = 5, 					-- margin between border and edge of window
+	border_width = 0, 							-- border width in pixels
+	default_bar_width = 80,					-- default is 0 - full width
+	default_bar_height = 10,					-- default is 6
+	default_gauge_height = 25,					-- default is 25
+	default_gauge_width =40,					-- default is 40
+	default_graph_height = 40,					-- default is 25
+	default_graph_width = 0,					-- default is 0 - full width
+	default_shade_color = {color0},			-- default shading colour
+	default_outline_color = {color0},			-- default outline colour
+	draw_borders = false,						-- draw borders around text
+	draw_graph_borders = true,					-- draw borders around graphs
+	draw_shades = false,						-- draw shades
+	draw_outline = false,						-- draw outline
+	stippled_borders = 0,						-- dashing the border
+
+	--Textual
+
+	extra_newline = false,						-- extra newline at the end - for asesome's wiboxes
+	format_human_readable = true,				-- KiB, MiB rather then number of bytes
+	font = 'Roboto Mono:size=10',  				-- font for complete conky unless in code defined
+	max_text_width = 0,							-- 0 will make sure line does not get broken if width too smal
+	max_user_text = 16384,						-- max text in conky default 16384
+	override_utf8_locale = true,				-- force UTF8 requires xft
+	short_units = true,							-- shorten units from KiB to k
+	top_name_width = 21,						-- width for $top name value default 15
+	top_name_verbose = false,					-- If true, top name shows the full command line of  each  process - Default value is false.
+	uppercase = false,							-- uppercase or not
+	use_spacer = 'none',						-- adds spaces around certain objects to align - default none
+	use_xft = true,								-- xft font - anti-aliased font
+	xftalpha = 1,								-- alpha of the xft font - between 0-1
+
+	--Windows
+
+	own_window = true,							-- create your own window to draw
+	own_window_argb_value = 100,			    -- real transparency - composite manager required 0-255
+	own_window_argb_visual = true,				-- use ARGB - composite manager required
+	own_window_class = 'Conky',					-- manually set the WM_CLASS name for use with xprop
+	own_window_colour = {color0},				-- set colour if own_window_transparent no
+	own_window_hints = 'undecorated,below,above,sticky,skip_taskbar,skip_pager',  -- if own_window true - just hints - own_window_type sets it
+	own_window_transparent = false,				-- if own_window_argb_visual is true sets background opacity 0%
+	own_window_title = 'system_conky',			-- set the name manually  - default conky "hostname"
+	own_window_type = 'desktop',				-- if own_window true options are: normal/override/dock/desktop/panel
+
+
+	--Colours
+
+	default_color = __color8,  				-- default color and border color
+	color1 = __color3,
+	color2 = __color4,
+	color3 = __color5,
+	color4 = __color1,
+	color5 = __color2,
+	color6 = __color8,
+
+	--Signal Colours
+	color7 = __color5,  						--green
+	color8 = __color4,  						--orange
+	color9 = __color1,  						--firebrick
+
+
+	--Lua
+
+
+};
+
+conky.text = [[
+${color6}${voffset 4}${font Roboto:size=36}${alignc}${time %H}:${time %M}${font}${color}
+${color6}${voffset 4}${font Roboto:size=12}${alignc}${time %A} ${time %B} ${time %e}, ${time %Y}${font}${color}
+
+${color5}${font Roboto:size=10}${voffset 2}S Y S T E M   ${hr 2}${font}${color}
+
+${color2}Kernel:${color}${alignr}${exec uname} ${exec uname -r}
+${color2}Uptime:${color} ${alignr}${uptime}
+${color2}Battery:${color} ${alignr}${battery_percent BAT0}%
+${color2}SSD:${color}${alignr}${fs_used /} | ${fs_size /}
+
+${color5}${font Roboto:size=10}P R O C E S S O R S  ${hr 2}${font}${color}
+
+${color2}CPU Freq:${color} $alignr${freq}MHz
+${color2}CPU Temp:${color} $alignr${execi 10 sensors | grep 'Core 0' | awk {'print $3'}}
+${color2}CPU Cores:${color} 
+
+${goto 60}${cpu cpu1}%${goto 120}${cpu cpu2}%${goto 180}${cpu cpu3}%${goto 240}${cpu cpu4}%
+${goto 60}${cpu cpu5}%${goto 120}${cpu cpu6}%${goto 180}${cpu cpu7}%${goto 240}${cpu cpu8}%
+
+${color2}Top Processes${goto 274}cpu%${color}
+${voffset 4}     1  -  ${top name 1}${alignr}${top cpu 1}
+${voffset 4}     2  -  ${top name 2}${alignr}${top cpu 2}
+${voffset 4}     3  -  ${top name 3}${alignr}${top cpu 3}
+${voffset 4}     4  -  ${top name 4}${alignr}${top cpu 4}
+${voffset 4}     5  -  ${top name 5}${alignr}${top cpu 5}
+
+${color5}${font Roboto:size=10}M E M O R Y   ${hr 2}${font}${color}
+
+${color2}RAM: ${color}${alignr}${mem} / ${memmax}
+#${alignr}${membar}
+${color2}Swap:${color} ${alignr}${swap} / ${swapmax}
+#${alignr}${swapbar}
+
+${color2}Top Processes${goto 274}mem%${color}
+${voffset 4}     1  -  ${top_mem name 1}${alignr} ${top_mem mem_res 1}
+${voffset 4}     2  -  ${top_mem name 2}${alignr} ${top_mem mem_res 2}
+${voffset 4}     3  -  ${top_mem name 3}${alignr} ${top_mem mem_res 3}
+${voffset 4}     4  -  ${top_mem name 4}${alignr} ${top_mem mem_res 4}
+${voffset 4}     5  -  ${top_mem name 5}${alignr} ${top_mem mem_res 5}
+
+${color5}${color5}${font Roboto:size=10}N E T W O R K   ${hr 2}${font}${color}
+
+${color2}Signal:${color}${alignr}${wireless_link_qual_perc wlp3s0}%
+${color2}Local IP:${color}${alignr}${if_up wlp3s0}${addr wlp3s0}${else}${endif}
+#${color2}Public IP:${color}${alignr}${if_up wlp3s0}${exec curl "https://api.ipify.org/?format=raw"}${else}${endif}
+
+${color2}Up: ${color}${upspeedf wlp3s0} kb${alignr}${color2}Down: ${color}${downspeedf wlp3s0} kb
+${color}${upspeedgraph wlp3s0 30,146 }${alignr}${downspeedgraph wlp3s0 30, 146 -t -l}
+${color2}Up:${color}${totalup wlp3s0}${color2}${alignr}Down:${color}${totaldown wlp3s0}
+
+${color5}${color5}${font Roboto:size=10}N O T E   ${hr 2}${font}${color}
+
+I waste my time whenever I like
+#${font Roboto:size=10}N V I D I A   ${hr 2}${font}
+#${font Roboto:size=10,weight:bold}${color5}${execp  nvidia-smi --query-supported-clocks=gpu_name --format=csv,noheader}${font}
+#${font StyleBats:size=20}u${font}${offset 8}${voffset -12}GPU Temp ${alignr}${execi 60 nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader} °C
+#${offset 30}Fan Speed ${alignr}${execi 60 nvidia-settings -q [fan:0]/GPUCurrentFanSpeed -t} %
+#${offset 30}GPU Clock ${alignr}${execi 60 nvidia-settings -q GPUCurrentClockFreqs | grep -m 1 Attribute | awk '{print $4}' | sed -e 's/\.//' | cut -d, -f1} MHz
+#${offset 30}Mem Clock ${alignr}${execi 86400 nvidia-settings -q all| grep -m 1 GPUCurrentProcessorClockFreqs | awk '{print $4}' | sed 's/.$//'} MHz
+#${offset 30}Mem Used ${alignr}${execi 60 nvidia-settings -q [gpu:0]/UsedDedicatedGPUMemory -t} / ${exec nvidia-settings -q [gpu:0]/TotalDedicatedGPUMemory -t} MiB0
+]];
