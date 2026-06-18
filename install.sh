@@ -44,7 +44,7 @@ CORE_PKGS=(
     # Display manager
     ly
     # File manager + GTK dark theme
-    thunar arc-gtk-theme
+    thunar 
     # System tray
     blueman network-manager-applet volumeicon
     # PolicyKit authentication agent
@@ -146,56 +146,6 @@ copy_configs() {
     mkdir -p "$USER_HOME/.config/rofi"
     echo "@theme \"$USER_HOME/.cache/wal/rofi.rasi\"" > "$USER_HOME/.config/rofi/config.rasi"
     ok "~/.config/rofi/config.rasi written."
-}
-
-# ── Thunar: dark theme + F4 terminal shortcut ────────────────────────────────
-setup_thunar() {
-    info "Configuring Thunar (dark theme + F4 terminal shortcut)..."
-
-    # GTK3 dark theme applied globally (Thunar + all GTK3 apps)
-    mkdir -p "$USER_HOME/.config/gtk-3.0"
-    cat > "$USER_HOME/.config/gtk-3.0/settings.ini" <<'EOF'
-[Settings]
-gtk-application-prefer-dark-theme=1
-gtk-theme-name=Arc-Dark
-gtk-font-name=Noto Sans 10
-EOF
-
-    mkdir -p "$USER_HOME/.config/Thunar"
-
-    # F4 → built-in "open-terminal" action (uses the configured XFCE4 terminal)
-    cat > "$USER_HOME/.config/Thunar/accels.scm" <<'EOF'
-; thunar GtkAccelMap rc-file         -*- scheme -*-
-(gtk_accel_path "<Actions>/ThunarWindow/open-terminal" "F4")
-EOF
-
-    # Custom action also in right-click menu (calls sakura directly, no exo dependency)
-    cat > "$USER_HOME/.config/Thunar/uca.xml" <<'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<actions>
-<action>
-	<icon>utilities-terminal</icon>
-	<name>Open Terminal Here</name>
-	<unique-id>1700000000.000001-1</unique-id>
-	<command>sakura --working-directory=%d</command>
-	<description>Open sakura terminal in current folder</description>
-	<patterns>*</patterns>
-	<startup-notify>false</startup-notify>
-	<directories/>
-</action>
-</actions>
-EOF
-
-    # Register sakura as the XFCE4 preferred terminal (used by F4 / exo-open)
-    mkdir -p "$USER_HOME/.config/xfce4"
-    if grep -q "^TerminalEmulator=" "$USER_HOME/.config/xfce4/helpers.rc" 2>/dev/null; then
-        sed -i "s/^TerminalEmulator=.*/TerminalEmulator=sakura/" \
-            "$USER_HOME/.config/xfce4/helpers.rc"
-    else
-        echo "TerminalEmulator=sakura" >> "$USER_HOME/.config/xfce4/helpers.rc"
-    fi
-
-    ok "Thunar: Arc-Dark theme applied, F4 opens sakura in current directory."
 }
 
 # ── Install Natura openbox theme ──────────────────────────────────────────────
@@ -319,7 +269,6 @@ main() {
     setup_zsh
     setup_venv
     copy_configs
-    setup_thunar
     generate_conky       # detects hardware → writes ~/.config/wal/all.conkyrc
     install_theme
     copy_scripts
