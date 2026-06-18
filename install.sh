@@ -38,7 +38,7 @@ install_aur_helper() {
 # ── Package installation ──────────────────────────────────────────────────────
 PACMAN_PKGS=(
     # Window manager + compositor
-    openbox picom obconf
+    openbox picom obconf-qt
     # Panel / monitor / launcher / wallpaper
     tint2 conky rofi dmenu feh
     # Display manager
@@ -68,22 +68,14 @@ PACMAN_PKGS=(
     zsh zsh-syntax-highlighting zsh-autosuggestions
 )
 
-AUR_PKGS=(
-    obkey            # graphical keybinding editor for openbox
-    python-notify2   # desktop notifications for color_scheme / jdate scripts
-    python-jdatetime # Jalali calendar for jdate script
-)
+# AUR packages kept minimal — obkey requires python2+pygtk (very slow build), skip it.
+# notify2 and jdatetime are installed via pip instead (see install_pip_packages).
+AUR_PKGS=()
 
 install_packages() {
     info "Updating system and installing pacman packages..."
     sudo pacman -Syu --needed --noconfirm "${PACMAN_PKGS[@]}"
     ok "Pacman packages installed."
-
-    local aur; aur=$(command -v paru 2>/dev/null || command -v yay 2>/dev/null)
-    info "Installing AUR packages via $(basename "$aur")..."
-    "$aur" -S --needed --noconfirm "${AUR_PKGS[@]}" || \
-        warn "Some AUR packages failed; continuing. Install manually if needed."
-    ok "AUR packages done."
 }
 
 # ── Zsh setup ─────────────────────────────────────────────────────────────────
@@ -100,6 +92,15 @@ setup_zsh() {
     fi
     sudo chsh -s "$zsh_path" "$USERNAME"
     ok "Default shell set to $zsh_path"
+}
+
+# ── Pip packages for scripts that run under system Python ─────────────────────
+install_pip_packages() {
+    info "Installing Python packages via pip (user-local)..."
+    # Arch uses PEP 668; try --user first, fall back to --break-system-packages
+    pip install --user notify2 jdatetime 2>/dev/null || \
+        pip install --user --break-system-packages notify2 jdatetime
+    ok "pip packages installed (notify2, jdatetime)."
 }
 
 # ── Python venv for translate.py ──────────────────────────────────────────────
@@ -260,6 +261,7 @@ main() {
 
     install_aur_helper
     install_packages
+    install_pip_packages
     setup_zsh
     setup_venv
     copy_configs
@@ -290,6 +292,7 @@ main() {
     echo "  • AMD GPU section uses /sys/class/drm/ — no extra package needed"
     echo "  • Re-run 'python3 ~/scripts/openbox-setup/generate_conkyrc.py' if hardware changes"
     echo "  • Run 'sensors-detect' manually if hardware temps don't appear in conky"
+    echo "  • obkey (keybinding GUI) needs python2 to build — skip or install manually from AUR"
     echo ""
 }
 
