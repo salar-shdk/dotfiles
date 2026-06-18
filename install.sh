@@ -36,16 +36,15 @@ install_aur_helper() {
 }
 
 # ── Package installation ──────────────────────────────────────────────────────
-PACMAN_PKGS=(
+CORE_PKGS=(
     # Window manager + compositor
     openbox picom obconf-qt
     # Panel / monitor / launcher / wallpaper
     tint2 conky rofi dmenu feh
     # Display manager
     ly
-    # XFCE utilities (settings daemon, power, notifications, etc.)
-    xfce4-settings xfce4-power-manager xfce4-notifyd
-    xfce4-appfinder xfce4-taskmanager xfce4-screenshooter exo
+    # File manager + GTK dark theme
+    thunar arc-gtk-theme
     # System tray
     blueman network-manager-applet volumeicon
     # PolicyKit authentication agent
@@ -59,23 +58,33 @@ PACMAN_PKGS=(
     # Screenshots + clipboard
     scrot xclip
     # Misc tools used by keybindings / scripts
-    xorg-xkill geany gsimplecal i3lock redshift
+    xorg-xkill geany gsimplecal i3lock redshift brightnessctl
     # Hardware sensors (for conky)
     lm_sensors
-    # Python + pywal
-    python python-pywal python-pip
+    # Python + pywal + notify
+    python python-pywal python-pip python-notify2
     # Shell
     zsh zsh-syntax-highlighting zsh-autosuggestions
 )
 
-# AUR packages kept minimal — obkey requires python2+pygtk (very slow build), skip it.
-# notify2 and jdatetime are installed via pip instead (see install_pip_packages).
-AUR_PKGS=()
+# Installed only when not already present — avoids redundant work on XFCE4 systems.
+XFCE4_PKGS=(
+    xfce4-settings xfce4-power-manager xfce4-notifyd
+    xfce4-appfinder xfce4-taskmanager xfce4-screenshooter exo
+)
 
 install_packages() {
-    info "Updating system and installing pacman packages..."
-    sudo pacman -Syu --needed --noconfirm "${PACMAN_PKGS[@]}"
-    ok "Pacman packages installed."
+    info "Updating system and installing core packages..."
+    sudo pacman -Syu --needed --noconfirm "${CORE_PKGS[@]}"
+    ok "Core packages installed."
+
+    if pacman -Qi xfce4-settings &>/dev/null; then
+        info "XFCE4 utilities already installed — skipping."
+    else
+        info "Installing XFCE4 utilities..."
+        sudo pacman -S --needed --noconfirm "${XFCE4_PKGS[@]}"
+        ok "XFCE4 utilities installed."
+    fi
 }
 
 # ── Zsh setup ─────────────────────────────────────────────────────────────────
@@ -92,15 +101,6 @@ setup_zsh() {
     fi
     sudo chsh -s "$zsh_path" "$USERNAME"
     ok "Default shell set to $zsh_path"
-}
-
-# ── Pip packages for scripts that run under system Python ─────────────────────
-install_pip_packages() {
-    info "Installing Python packages via pip (user-local)..."
-    # Arch uses PEP 668; try --user first, fall back to --break-system-packages
-    pip install --user notify2 jdatetime 2>/dev/null || \
-        pip install --user --break-system-packages notify2 jdatetime
-    ok "pip packages installed (notify2, jdatetime)."
 }
 
 # ── Python venv for translate.py ──────────────────────────────────────────────
@@ -141,6 +141,61 @@ copy_configs() {
     cp "$SETUP_DIR/configs/wal/templates/rofi.rasi"  "$USER_HOME/.config/wal/templates/rofi.rasi"
     cp "$SETUP_DIR/configs/wal/templates/tint2rc"    "$USER_HOME/.config/wal/templates/tint2rc"
     ok "Pywal templates copied."
+
+    info "Creating rofi theme config..."
+    mkdir -p "$USER_HOME/.config/rofi"
+    echo "@theme \"$USER_HOME/.cache/wal/rofi.rasi\"" > "$USER_HOME/.config/rofi/config.rasi"
+    ok "~/.config/rofi/config.rasi written."
+}
+
+# ── Thunar: dark theme + F4 terminal shortcut ────────────────────────────────
+setup_thunar() {
+    info "Configuring Thunar (dark theme + F4 terminal shortcut)..."
+
+    # GTK3 dark theme applied globally (Thunar + all GTK3 apps)
+    mkdir -p "$USER_HOME/.config/gtk-3.0"
+    cat > "$USER_HOME/.config/gtk-3.0/settings.ini" <<'EOF'
+[Settings]
+gtk-application-prefer-dark-theme=1
+gtk-theme-name=Arc-Dark
+gtk-font-name=Noto Sans 10
+EOF
+
+    mkdir -p "$USER_HOME/.config/Thunar"
+
+    # F4 → built-in "open-terminal" action (uses the configured XFCE4 terminal)
+    cat > "$USER_HOME/.config/Thunar/accels.scm" <<'EOF'
+; thunar GtkAccelMap rc-file         -*- scheme -*-
+(gtk_accel_path "<Actions>/ThunarWindow/open-terminal" "F4")
+EOF
+
+    # Custom action also in right-click menu (calls sakura directly, no exo dependency)
+    cat > "$USER_HOME/.config/Thunar/uca.xml" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+<action>
+	<icon>utilities-terminal</icon>
+	<name>Open Terminal Here</name>
+	<unique-id>1700000000.000001-1</unique-id>
+	<command>sakura --working-directory=%d</command>
+	<description>Open sakura terminal in current folder</description>
+	<patterns>*</patterns>
+	<startup-notify>false</startup-notify>
+	<directories/>
+</action>
+</actions>
+EOF
+
+    # Register sakura as the XFCE4 preferred terminal (used by F4 / exo-open)
+    mkdir -p "$USER_HOME/.config/xfce4"
+    if grep -q "^TerminalEmulator=" "$USER_HOME/.config/xfce4/helpers.rc" 2>/dev/null; then
+        sed -i "s/^TerminalEmulator=.*/TerminalEmulator=sakura/" \
+            "$USER_HOME/.config/xfce4/helpers.rc"
+    else
+        echo "TerminalEmulator=sakura" >> "$USER_HOME/.config/xfce4/helpers.rc"
+    fi
+
+    ok "Thunar: Arc-Dark theme applied, F4 opens sakura in current directory."
 }
 
 # ── Install Natura openbox theme ──────────────────────────────────────────────
@@ -261,10 +316,10 @@ main() {
 
     install_aur_helper
     install_packages
-    install_pip_packages
     setup_zsh
     setup_venv
     copy_configs
+    setup_thunar
     generate_conky       # detects hardware → writes ~/.config/wal/all.conkyrc
     install_theme
     copy_scripts

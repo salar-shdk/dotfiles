@@ -366,8 +366,8 @@
       <command>playerctl next</command>
     </action>
   </keybind>
-#<keybind key="XF86MonBrightnessUp"><action name="Execute"><command>xbacklight +10</command></action></keybind>
-#<keybind key="XF86MonBrightnessDown"><action name="Execute"><command>xbacklight -10</command></action></keybind>
+<keybind key="XF86MonBrightnessUp"><action name="Execute"><command>brightnessctl set +10%</command></action></keybind>
+<keybind key="XF86MonBrightnessDown"><action name="Execute"><command>brightnessctl set 10%-</command></action></keybind>
 <keybind key="Print"><action name="Execute"><command>scrot 'screenshot_%Y%m%d-%H%M%S_$wx$h.png' -e 'xclip -selection clipboard -t image/png -i $f; mv $f $$(xdg-user-dir PICTURES) ;/$f'</command></action></keybind>
 <keybind key="A-Print"><action name="Execute"><command>scrot -d 5 'screenshot_%Y%m%d-%H%M%S_$wx$h.png' -e 'xclip -selection clipboard -t image/png -i $f; mv $f $$(xdg-user-dir PICTURES) ;/$f'</command></action></keybind>
 <keybind key="A-W-Print"><action name="Execute"><command>xfce4-screenshooter</command></action></keybind>
