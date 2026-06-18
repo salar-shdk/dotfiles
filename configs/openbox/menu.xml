@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_menu xmlns="http://openbox.org/3.4/menu">
+
+<menu id="root-menu" label="Openbox">
+  <!-- Applications -->
+  <item label="Terminal">
+    <action name="Execute">
+      <command>xfce4-terminal</command>
+      <!-- Alternative terminals if xfce4-terminal not installed:
+      <command>urxvt</command>
+      <command>rxvt</command>
+      <command>xterm</command>
+      <command>alacritty</command>
+      <command>kitty</command>
+      -->
+    </action>
+  </item>
+  
+  <item label="File Manager">
+    <action name="Execute">
+      <command>thunar</command>
+      <!-- Alternatives:
+      <command>pcmanfm</command>
+      <command>nemo</command>
+      <command>dolphin</command>
+      -->
+    </action>
+  </item>
+  
+  <item label="Web Browser">
+    <action name="Execute">
+      <command>firefox</command>
+      <!-- Alternatives:
+      <command>google-chrome-stable</command>
+      <command>chromium</command>
+      <command>brave</command>
+      -->
+    </action>
+  </item>
+  
+  <!-- Separator -->
+  <separator/>
+  
+  <!-- Openbox Tools -->
+  <item label="Reconfigure Openbox">
+    <action name="Reconfigure"/>
+  </item>
+  
+  <item label="Restart Openbox">
+    <action name="Restart"/>
+  </item>
+  
+  <menu id="openbox-config-menu" label="Openbox Configuration">
+    <item label="Edit rc.xml">
+      <action name="Execute">
+        <command>xdg-open ~/.config/openbox/rc.xml</command>
+      </action>
+    </item>
+    <item label="Edit menu.xml">
+      <action name="Execute">
+        <command>xdg-open ~/.config/openbox/menu.xml</command>
+      </action>
+    </item>
+    <item label="Edit autostart">
+      <action name="Execute">
+        <command>xdg-open ~/.config/openbox/autostart</command>
+      </action>
+    </item>
+    <item label="Edit environment">
+      <action name="Execute">
+        <command>xdg-open ~/.config/openbox/environment</command>
+      </action>
+    </item>
+  </menu>
+  
+  <!-- Separator -->
+  <separator/>
+  
+  <!-- System -->
+  <menu id="system-menu" label="System">
+    <item label="Log Out">
+      <action name="Execute">
+        <script>openbox --exit</script>
+      </action>
+    </item>
+    
+    <item label="Reboot">
+      <action name="Execute">
+        <command>systemctl reboot</command>
+      </action>
+    </item>
+    
+    <item label="Shutdown">
+      <action name="Execute">
+        <command>systemctl poweroff</command>
+      </action>
+    </item>
+    
+    <item label="Suspend">
+      <action name="Execute">
+        <command>systemctl suspend</command>
+      </action>
+    </item>
+    
+    <item label="Lock Screen">
+      <action name="Execute">
+        <command>xscreensaver-command -lock</command>
+        <!-- Alternatives:
+        <command>slock</command>
+        <command>i3lock</command>
+        <command>light-locker-command -l</command>
+        -->
+      </action>
+    </item>
+  </menu>
+  
+  <!-- Separator -->
+  <separator/>
+  
+  <!-- Exit Options -->
+  <item label="Exit to Login">
+    <action name="Exit">
+      <prompt>yes</prompt>
+    </action>
+  </item>
+  
+</menu>
+
+</openbox_menu>

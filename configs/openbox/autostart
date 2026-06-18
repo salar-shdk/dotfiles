@@ -1,0 +1,23 @@
+#
+# These things are run when an Openbox X Session is started.
+#
+
+picom -b --config ~/.config/picom.conf &
+
+blueman-tray &
+
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+
+/usr/lib/xfce4/notifyd/xfce4-notifyd &
+
+volumeicon &
+
+xfce4-power-manager &
+
+xfsettingsd &
+
+nm-applet &
+
+~/scripts/color_scheme &
+
+sleep 1; conky -c $HOME/.cache/wal/all.conkyrc &

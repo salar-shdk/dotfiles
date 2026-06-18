@@ -1,0 +1,77 @@
+# ===== HISTORY =====
+HISTFILE=~/.zsh_history
+HISTSIZE=100000
+SAVEHIST=100000
+setopt appendhistory sharehistory incappendhistory
+setopt extendedhistory histignorealldups histignorespace
+setopt histreduceblanks
+
+# ===== COMPLETION =====
+autoload -Uz compinit
+if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
+
+zstyle ':completion:*' menu select
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+
+# ===== PROMPT =====
+PROMPT='%F{cyan}%n%f:%F{green}%~%f$ '
+
+# ===== ALIASES =====
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ls='ls --color=auto -h'
+alias ll='ls -la'
+alias pacu='sudo pacman -Syu'
+alias yays='yay -Ss'
+alias rm='rm -i'
+alias cp='cp -i'
+# Your existing aliases...
+alias gs='git status'
+alias gl='git log --oneline --graph --decorate'
+# ... etc
+
+# ===== KEYBINDINGS =====
+# Fish-like history search
+autoload -Uz history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+
+bindkey '^[[A' history-beginning-search-backward-end
+bindkey '^[[B' history-beginning-search-forward-end
+bindkey '^P' history-beginning-search-backward-end
+bindkey '^N' history-beginning-search-forward-end
+bindkey '^R' history-incremental-search-backward
+
+# Home / End keys
+bindkey "^[[H" beginning-of-line
+bindkey "^[[F" end-of-line
+bindkey "^[OH" beginning-of-line
+bindkey "^[OF" end-of-line
+bindkey "\e[1~" beginning-of-line
+bindkey "\e[4~" end-of-line
+
+
+# ===== PLUGINS =====
+# Syntax highlighting
+[[ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] && 
+  source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Autosuggestions
+[[ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] && {
+  source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+  bindkey '^ ' autosuggest-accept
+}
+
+# ===== ENVIRONMENT =====
+export EDITOR='nvim'
+export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+
+# ===== FUNCTIONS =====
+mkcd() { mkdir -p "$1" && cd "$1"; }
+reload() { source ~/.zshrc && echo "Config reloaded!"; }

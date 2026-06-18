@@ -1,0 +1,26 @@
+#!/usr/bin/env python
+
+import os
+
+CONFIG_FILE = '/tmp/reading_mode'
+
+COLD_COMMAND = 'redshift -O 16666'
+WARM_COMMAND = 'redshift -O 2666'
+CLEAN_COMMAND = 'redshift -x'
+
+try:
+	with open(CONFIG_FILE,'r') as f:
+	    mode = int(f.read())
+except:
+	mode = 0
+	
+with open(CONFIG_FILE, 'w') as f:
+    if mode == 4:
+        mode = -1
+        os.system(CLEAN_COMMAND)
+    elif mode%2 == 0:
+        os.system(COLD_COMMAND)
+    else:
+        os.system(WARM_COMMAND)
+    mode += 1
+    f.write(str(mode))

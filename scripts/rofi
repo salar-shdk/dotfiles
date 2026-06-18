@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+str="ir"
+content=$(cat /tmp/current_kb)
+if [ "$str" == "$content" ];then
+    switch_keyboard
+fi
+rofi -show drun

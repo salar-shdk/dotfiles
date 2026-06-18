@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+
+import  notify2 ,os , random, time, json
+notify2.init('test service')
+home_path = os.path.expanduser('~')
+
+# todo_quote_path = f'{home_path}/.dmenu-conky-todo/.todo_quotes'
+# max_qoute_line_chars = 31
+path = f'{home_path}/Pictures/wallpaper/'
+
+pics = []
+for root , directory , files in os.walk(path):
+    pics = files
+print(len(pics))
+chosen_pic = random.choice(pics)
+choice = path + '\"{}\"'.format(chosen_pic)
+
+# with open(todo_quote_path) as f:
+#     random_quote = random.choice(f.read().split('\n'))
+
+os.system('wal -i {} '.format(choice))
+os.system('feh --bg-scale {} &'.format(choice))
+CONKY_IN = f'{home_path}/.config/wal/all.conkyrc'
+CONKY_OUT = f'{home_path}/.cache/wal/all.conkyrc'
+COLORS = f'{home_path}/.cache/wal/colors.json'
+
+with open(CONKY_IN,'r') as f:
+    data = f.read()
+with open(COLORS, 'r') as f:
+    colors = json.loads(f.read())['colors']
+
+for key, value in colors.items():
+    data = data.replace('__'+key, f'\'{value}\'')
+
+with open(CONKY_OUT, 'w') as f:
+    f.write(data)
+
+# CONKY_IN = f'{home_path}/.config/wal/todo.conkyrc'
+# CONKY_OUT = f'{home_path}/.cache/wal/todo.conkyrc'
+
+# with open(CONKY_IN,'r') as f:
+#     data = f.read()
+# with open(COLORS, 'r') as f:
+#     colors = json.loads(f.read())['colors']
+
+# for key, value in colors.items():
+#     data = data.replace('__'+key, f'\'{value}\'')
+
+# #'\n'.join(random_quote[i:i+max_qoute_line_chars] for i in range(0,len(random_quote),max_qoute_line_chars))
+# data = data.replace('__random_quote__',random_quote)
+
+# with open(CONKY_OUT, 'w') as f:
+#     f.write(data)
+    
+#os.system('rm -f {}/.themes/my_openbox/openbox-3/themerc'.format(home_path))
+#os.system('cp {}/.cache/wal/themerc {}/.themes/my_openbox/openbox-3/themerc'.format(home_path,home_path))
+os.system('openbox --reconfigure')
+#
+os.system('killall tint2')
+os.system(f'tint2 -c {home_path}/.cache/wal/tint2rc &')
+
+n = notify2.Notification('background and colorscheme changed with : {}'.format(chosen_pic))
+n.show()

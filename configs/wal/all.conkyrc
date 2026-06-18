@@ -105,60 +105,56 @@ ${color6}${voffset 4}${font Roboto:size=36}${alignc}${time %H}:${time %M}${font}
 ${color6}${voffset 4}${font Roboto:size=12}${alignc}${time %A} ${time %B} ${time %e}, ${time %Y}${font}${color}
 
 ${color5}${font Roboto:size=10}${voffset 2}S Y S T E M   ${hr 2}${font}${color}
-
 ${color2}Kernel:${color}${alignr}${exec uname} ${exec uname -r}
 ${color2}Uptime:${color} ${alignr}${uptime}
-${color2}Battery:${color} ${alignr}${battery_percent BAT0}%
 ${color2}SSD:${color}${alignr}${fs_used /} | ${fs_size /}
+${color2}SSD Temp:${color}${alignr}${execi 30 sensors nvme-pci-0100 | awk '/Composite:/{print $2}'}
+${color2}Motherboard Temp:${color}${alignr}${execi 30 sensors gigabyte_wmi-virtual-0 | awk '/temp1:/{print $2}'}
 
 ${color5}${font Roboto:size=10}P R O C E S S O R S  ${hr 2}${font}${color}
-
 ${color2}CPU Freq:${color} $alignr${freq}MHz
-${color2}CPU Temp:${color} $alignr${execi 10 sensors | grep 'Core 0' | awk {'print $3'}}
+${color2}CPU Temp:${color}${alignr}${execi 10 sensors k10temp-pci-00c3 | awk '/Tctl:/{print $2}'}
 ${color2}CPU Cores:${color} 
-
 ${goto 60}${cpu cpu1}%${goto 120}${cpu cpu2}%${goto 180}${cpu cpu3}%${goto 240}${cpu cpu4}%
 ${goto 60}${cpu cpu5}%${goto 120}${cpu cpu6}%${goto 180}${cpu cpu7}%${goto 240}${cpu cpu8}%
+${goto 60}${cpu cpu9}%${goto 120}${cpu cpu10}%${goto 180}${cpu cpu11}%${goto 240}${cpu cpu12}%
+${goto 60}${cpu cpu13}%${goto 120}${cpu cpu14}%${goto 180}${cpu cpu15}%${goto 240}${cpu cpu16}%
+${color2}Top Processes${alignr}cpu${color}
+${voffset 4}     1  -  ${top name 1}${alignr}${top cpu 1}%
+${voffset 4}     2  -  ${top name 2}${alignr}${top cpu 2}%
+${voffset 4}     3  -  ${top name 3}${alignr}${top cpu 3}%
+${voffset 4}     4  -  ${top name 4}${alignr}${top cpu 4}%
+${voffset 4}     5  -  ${top name 5}${alignr}${top cpu 5}%
 
-${color2}Top Processes${goto 274}cpu%${color}
-${voffset 4}     1  -  ${top name 1}${alignr}${top cpu 1}
-${voffset 4}     2  -  ${top name 2}${alignr}${top cpu 2}
-${voffset 4}     3  -  ${top name 3}${alignr}${top cpu 3}
-${voffset 4}     4  -  ${top name 4}${alignr}${top cpu 4}
-${voffset 4}     5  -  ${top name 5}${alignr}${top cpu 5}
+${color5}${font Roboto:size=10}N V I D I A   ${hr 2}${font}${color}
+${color2}GPU:${color}${alignr}${execi 60 nvidia-smi --query-gpu=name --format=csv,noheader}
+${color2}Temp:${color}${alignr}${execi 20 nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader}°C
+${color2}Utilization:${color}${alignr}${execi 20 nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader}
+${color2}Power:${color}${alignr}${execi 20 nvidia-smi --query-gpu=power.draw --format=csv,noheader}
+${color2}Memory:${color}${alignr}${execi 20 nvidia-smi --query-gpu=memory.used --format=csv,noheader} / ${execi 60 nvidia-smi --query-gpu=memory.total --format=csv,noheader}
 
 ${color5}${font Roboto:size=10}M E M O R Y   ${hr 2}${font}${color}
-
 ${color2}RAM: ${color}${alignr}${mem} / ${memmax}
 #${alignr}${membar}
 ${color2}Swap:${color} ${alignr}${swap} / ${swapmax}
 #${alignr}${swapbar}
-
-${color2}Top Processes${goto 274}mem%${color}
+${color2}Top Processes${alignr}mem${color}
 ${voffset 4}     1  -  ${top_mem name 1}${alignr} ${top_mem mem_res 1}
 ${voffset 4}     2  -  ${top_mem name 2}${alignr} ${top_mem mem_res 2}
 ${voffset 4}     3  -  ${top_mem name 3}${alignr} ${top_mem mem_res 3}
 ${voffset 4}     4  -  ${top_mem name 4}${alignr} ${top_mem mem_res 4}
 ${voffset 4}     5  -  ${top_mem name 5}${alignr} ${top_mem mem_res 5}
 
-${color5}${color5}${font Roboto:size=10}N E T W O R K   ${hr 2}${font}${color}
-
-${color2}Signal:${color}${alignr}${wireless_link_qual_perc wlp3s0}%
-${color2}Local IP:${color}${alignr}${if_up wlp3s0}${addr wlp3s0}${else}${endif}
-#${color2}Public IP:${color}${alignr}${if_up wlp3s0}${exec curl "https://api.ipify.org/?format=raw"}${else}${endif}
-
-${color2}Up: ${color}${upspeedf wlp3s0} kb${alignr}${color2}Down: ${color}${downspeedf wlp3s0} kb
-${color}${upspeedgraph wlp3s0 30,146 }${alignr}${downspeedgraph wlp3s0 30, 146 -t -l}
-${color2}Up:${color}${totalup wlp3s0}${color2}${alignr}Down:${color}${totaldown wlp3s0}
+${color5}${font Roboto:size=10}N E T W O R K   ${hr 2}${font}${color}
+${color2}Status:${color}${alignr}${if_up wlan0}${color7}Connected${else}${color9}Disconnected${endif}
+${color2}Signal:${color}${alignr}${wireless_link_qual_perc wlan0}% ${if_match ${wireless_link_qual_perc wlan0} > 80}${color7}✓${else}${if_match ${wireless_link_qual_perc wlan0} > 40}${color8}${else}${color9}✗${endif}${endif}
+${color2}Local IP:${color}${alignr}${addr wlan0}
+${color2}External IP:${color}${alignr}${execi 600 curl -s https://api.ipify.org 2>/dev/null || echo "---"}
+${color2}Ping (8.8.8.8):${color}${alignr}${execi 10 ping -c 1 -W 1 8.8.8.8 2>/dev/null | grep "time=" | cut -d'=' -f4 | cut -d' ' -f1 || echo "---"} ms
+${color2}Speed:${color} ${upspeedf wlan0} kb/s ↑${alignr}${downspeedf wlan0} kb/s ↓
+${color}${upspeedgraph wlan0 25,140 303030 4679cc}${alignr}${downspeedgraph wlan0 25,140 303030 d95468}
+${color2}Today:${color} ${totalup wlan0} ↑${alignr}${totaldown wlan0} ↓
 
 ${color5}${color5}${font Roboto:size=10}N O T E   ${hr 2}${font}${color}
-
 I waste my time whenever I like
-#${font Roboto:size=10}N V I D I A   ${hr 2}${font}
-#${font Roboto:size=10,weight:bold}${color5}${execp  nvidia-smi --query-supported-clocks=gpu_name --format=csv,noheader}${font}
-#${font StyleBats:size=20}u${font}${offset 8}${voffset -12}GPU Temp ${alignr}${execi 60 nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader} °C
-#${offset 30}Fan Speed ${alignr}${execi 60 nvidia-settings -q [fan:0]/GPUCurrentFanSpeed -t} %
-#${offset 30}GPU Clock ${alignr}${execi 60 nvidia-settings -q GPUCurrentClockFreqs | grep -m 1 Attribute | awk '{print $4}' | sed -e 's/\.//' | cut -d, -f1} MHz
-#${offset 30}Mem Clock ${alignr}${execi 86400 nvidia-settings -q all| grep -m 1 GPUCurrentProcessorClockFreqs | awk '{print $4}' | sed 's/.$//'} MHz
-#${offset 30}Mem Used ${alignr}${execi 60 nvidia-settings -q [gpu:0]/UsedDedicatedGPUMemory -t} / ${exec nvidia-settings -q [gpu:0]/TotalDedicatedGPUMemory -t} MiB0
 ]];

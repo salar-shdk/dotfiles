@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+
+import sys, getopt
+import os
+
+CONFIG='/tmp/current_kb'
+
+try:
+	with open(CONFIG,'r') as f:
+		current = f.read()
+except:
+	with open(CONFIG,'w') as f:
+		f.write('us')
+		current = 'us'
+print(current)
+with open(CONFIG,'w') as f:
+	if 'us' in current:
+		os.system('setxkbmap ir')
+		f.write('ir')
+	elif 'ir' in current:
+		os.system('setxkbmap us')
+		f.write('us')
